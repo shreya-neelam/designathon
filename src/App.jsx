@@ -1,0 +1,23 @@
+import './index.css'; 
+import React from 'react'; 
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'; 
+import Login from './Components/Login'; 
+import Signup from './Components/Signup'; 
+import PasswordRecovery from './Components/PasswordRecovery'; 
+import PasswordReset from './Components/PasswordReset'; 
+
+function App() { 
+  return ( 
+    <Router> 
+      <Routes> 
+        <Route path="/" element={<Navigate to="/login" />} /> 
+        <Route path="/login" element={<Login />} /> 
+        <Route path="/signup" element={<Signup />} /> 
+        <Route path="/password-recovery" element={<PasswordRecovery />} /> 
+        <Route path="/password-reset" element={<PasswordReset />} /> 
+      </Routes> 
+    </Router> 
+  ); 
+} 
+
+export default App; 
