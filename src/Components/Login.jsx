@@ -32,6 +32,10 @@ const Login = () => {
       const response = await api.put('/token', {
         username: usernameEmail,
         password: password,
+      },{
+        headers: {
+          'Content-Type': 'multipart/form-data', // Set the content type to form-data
+      },
       });
 
       const { access_token } = response.data;
