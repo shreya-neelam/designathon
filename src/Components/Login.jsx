@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../axioss/api'; // Import the Axios instance
 
 const Login = () => {
   const [usernameEmail, setUsernameEmail] = useState('');
@@ -8,51 +9,45 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  const validateEmail = (email) => {
-    const re = /^[^s@]+@[^s@]+.[^s@]+$/;
-    return re.test(email);
-  };
+  const handleLogin = async () => {
+    setErrorMessage(''); // Clear any previous error messages
 
-  const handleLogin = () => {
     if (!usernameEmail) {
       setErrorMessage('Username or Email is required.');
       return;
     }
-    if (usernameEmail.includes('@') && !validateEmail(usernameEmail)) {
-      setErrorMessage('Invalid email format.');
-      return;
-    }
+
     if (!password) {
       setErrorMessage('Password is required.');
       return;
     }
+
     if (password.length < 8) {
       setErrorMessage('Password must be at least 8 characters.');
       return;
     }
 
-    // Simulate authentication process
-    authenticateUser(usernameEmail, password)
-      .then((isAuthenticated) => {
-        if (isAuthenticated) {
-          // Redirect to dashboard using navigate
-          navigate('/dashboard');
-        } else {
-          setErrorMessage('Authentication failed. Please check your credentials.');
-        }
-      })
-      .catch((error) => {
-        setErrorMessage('An error occurred during authentication.');
+    try {
+      console.log("entered");
+      const response = await api.put('/token', {
+        username: usernameEmail,
+        password: password,
       });
-  };
 
-  const authenticateUser = (usernameEmail, password) => {
-    // Simulate an API call for authentication
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(usernameEmail === ' user@example.com' && password === 'password123');
-      }, 1000);
-    });
+      const { access_token } = response.data;
+      localStorage.setItem('token', access_token);
+
+      // Optionally, store the "remember me" preference
+      if (rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('rememberMe');
+      }
+
+      navigate('/dashboard');
+    } catch (error) {
+      setErrorMessage('Authentication failed. Please check your credentials.');
+    }
   };
 
   return (

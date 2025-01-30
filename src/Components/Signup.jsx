@@ -1,30 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../axioss/api'; // Import the Axios instance
 
 const Signup = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState(2); // Default to 'USER'
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  const validateEmail = (email) => {
-    const re = /^[^s@]+@[^s@]+.[^s@]+$/;
-    return re.test(email);
-  };
-
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (!fullName) {
       setErrorMessage('Full Name is required.');
       return;
     }
     if (!email) {
       setErrorMessage('Email is required.');
-      return;
-    }
-    if (!validateEmail(email)) {
-      setErrorMessage('Invalid email format.');
       return;
     }
     if (!password) {
@@ -44,24 +37,17 @@ const Signup = () => {
       return;
     }
 
-    // Simulate user creation process
-    createUser(fullName, email, password)
-      .then(() => {
-        // Redirect to login with success message
-        navigate('/login?success=1');
-      })
-      .catch((error) => {
-        setErrorMessage('An error occurred during registration.');
+    try {
+      await api.post('/user_details', {
+        name: fullName,
+        email: email,
+        password: password,
+        role: role, // Send role as an integer
       });
-  };
-
-  const createUser = (fullName, email, password) => {
-    // Simulate an API call for user creation
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 1000);
-    });
+      navigate('/login?success=1');
+    } catch (error) {
+      setErrorMessage('An error occurred during registration.');
+    }
   };
 
   return (
@@ -107,6 +93,17 @@ const Signup = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             className="w-full px-3 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Role</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(parseInt(e.target.value, 10))}
+            className="w-full px-3 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value={2}>User</option>
+            <option value={1}>Admin</option>
+          </select>
         </div>
         <button
           onClick={handleSignUp}
