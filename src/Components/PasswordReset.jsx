@@ -27,9 +27,9 @@ const PasswordReset = () => {
       setErrorMessage('Passwords do not match.');
       return;
     }
-
+    console.log(email)
     try {
-      await axios.put('http://localhost:8000/reset-password', { email, new_password: newPassword });
+      await axios.put('http://localhost:8000/reset-password?email='+email+"&new_password="+ newPassword);
       alert('Password reset successful!');
       navigate('/login');
     } catch (error) {

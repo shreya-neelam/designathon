@@ -16,12 +16,12 @@ const PasswordResetForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await api.post('http://localhost:8000/verify-email', { email });
+      const response = await api.post('http://localhost:8000/verify-email?email='+email );
       if (response.data) {
         setError(null);
         setSubmitted(true);
         console.log("entered")
-        navigate('/reset-password', { state: { email } });
+        navigate('/password-reset', { state: { email } });
       }
     } catch (error) {
       setError('User not found');
