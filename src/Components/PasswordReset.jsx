@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 const PasswordReset = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email;
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     if (!newPassword) {
       setErrorMessage('New Password is required.');
       return;
@@ -25,24 +28,13 @@ const PasswordReset = () => {
       return;
     }
 
-    // Simulate password reset process
-    resetPassword(newPassword)
-      .then(() => {
-        alert('Password reset successful!');
-        navigate('/login');
-      })
-      .catch(() => {
-        setErrorMessage('An error occurred during password reset.');
-      });
-  };
-
-  const resetPassword = (password) => {
-    // Simulate an API call to reset the password
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 1000);
-    });
+    try {
+      await axios.put('http://localhost:8000/reset-password', { email, new_password: newPassword });
+      alert('Password reset successful!');
+      navigate('/login');
+    } catch (error) {
+      setErrorMessage('An error occurred during password reset.');
+    }
   };
 
   return (
